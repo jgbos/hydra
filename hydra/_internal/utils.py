@@ -205,10 +205,9 @@ def run_and_report(func: Any) -> Any:
             print_exc()
         else:
             if isinstance(ex, (ConfigCompositionException, OverrideParseException)):
+                sys.stderr.write(str(ex) + os.linesep)
                 if ex.__cause__ is not None:
-                    sys.stderr.write(str(ex) + os.linesep)
-                else:
-                    sys.stderr.write(str(ex) + os.linesep)
+                    sys.stderr.write(str(ex.__cause__) + os.linesep)
             else:
                 # Custom printing that strips the Hydra related stack frames from the top
                 # And any omegaconf frames from the bottom.

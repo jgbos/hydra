@@ -483,10 +483,10 @@ class HydraErrorListener(ErrorListener):  # type: ignore
         msg: Any,
         e: Any,
     ) -> None:
-        if e is not None:
-            raise HydraException(str(e)) from e
+        if msg is not None:
+            raise HydraException(msg) from e
         else:
-            raise HydraException(msg)
+            raise HydraException(str(e)) from e
 
     def reportAmbiguity(
         self,
@@ -567,13 +567,15 @@ class OverridesParser:
                     prefix = "LexerNoViableAltException: "
                     start = len(prefix) + cause.startIndex + 1
                     msg = f"{prefix}{override}" f"\n{'^'.rjust(start)}"
+                    e.__cause__ = None
                 elif isinstance(cause, RecognitionException):
                     prefix = f"{e}: "
                     offending_token: Token = cause.offendingToken
                     start = len(prefix) + offending_token.start + 1
                     msg = f"{prefix}{override}" f"\n{'^'.rjust(start)}"
+                    e.__cause__ = None
                 else:
-                    msg = f"Error parsing override '{override}' : {e}"
+                    msg = f"Error parsing override '{override}'" f"\n{e}"
                 raise OverrideParseException(
                     override=override,
                     message=f"{msg}"
